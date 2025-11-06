@@ -1,0 +1,28 @@
+# Built application files
+*.jar
+*.war
+*.ear
+
+# Build directory
+target/
+build/
+
+# Log files
+*.log
+
+# IDE files
+.idea/
+*.iml
+.project
+.classpath
+.settings/
+
+# Maven
+.mvn/
+mvnw
+mvnw.cmd
+
+# Gradle
+.gradle/
+gradlew
+gradlew.bat
