@@ -2,7 +2,8 @@ package com.cmed.prescriptionapp.controller;
 
 import com.cmed.prescriptionapp.domain.UserDomain;
 import com.cmed.prescriptionapp.entity.UserEntity;
-import com.cmed.prescriptionapp.model.Role;
+import com.cmed.prescriptionapp.domain.LoginRequest;
+import com.cmed.prescriptionapp.domain.RegistrationRequest;
 import com.cmed.prescriptionapp.security.JwtUtil;
 import com.cmed.prescriptionapp.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -23,30 +25,26 @@ public class AuthController {
     private final JwtUtil jwtUtil;
     private final AuthenticationManager authenticationManager;
 
-    @PostMapping("/register/{username}/{password}/{role}")
-    public ResponseEntity<UserDomain> register(
-            @PathVariable String username,
-            @PathVariable String password,
-            @PathVariable Role role) {
+    @PostMapping("/register")
+    public ResponseEntity<UserDomain> register(@RequestBody RegistrationRequest request) {
 
         UserEntity user = new UserEntity();
-        user.setUsername(username);
-        user.setPassword(password);
-        user.setRole(role.toString());
+        user.setUsername(request.getUsername());
+        user.setPassword(request.getPassword());
+        user.setRole(request.getRole().toString());
 
         return ResponseEntity.ok(userService.register(user));
     }
 
 
-    @PostMapping("/login/{username}/{password}")
-    public Map<String, String> login(
-            @PathVariable String username,
-            @PathVariable String password) {
+    @PostMapping("/login")
+    public Map<String, String> login(@RequestBody LoginRequest request) {
         try {
             authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(username, password)
+                    new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
             );
-            String token = jwtUtil.generateToken(username);
+            UserDetails userDetails = userService.loadUserByUsername(request.getUsername());
+            String token = jwtUtil.generateToken(userDetails.getUsername(), userDetails.getAuthorities());
             return Map.of("token", token);
         } catch (AuthenticationException e) {
             return Map.of("error", "Invalid username or password");

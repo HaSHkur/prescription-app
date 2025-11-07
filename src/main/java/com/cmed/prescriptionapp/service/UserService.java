@@ -5,7 +5,7 @@ import com.cmed.prescriptionapp.domain.UserDomain;
 import com.cmed.prescriptionapp.entity.UserEntity;
 import com.cmed.prescriptionapp.mapper.UserMapper;
 import com.cmed.prescriptionapp.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -13,11 +13,15 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor
 public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+
+    public UserService(UserRepository userRepository, @Lazy PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     public UserDomain register(UserEntity user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -32,7 +36,7 @@ public class UserService implements UserDetailsService {
         return org.springframework.security.core.userdetails.User
                 .withUsername(user.getUsername())
                 .password(user.getPassword())
-                .authorities("USER")
+                .authorities("ROLE_" + user.getRole())
                 .build();
     }
 }
