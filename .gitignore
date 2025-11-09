@@ -1,5 +1,5 @@
 # Built application files
-*.jar
+/build/libs/*.jar
 *.war
 *.ear
 
@@ -24,3 +24,6 @@ mvnw.cmd
 
 # Gradle
 .gradle/
+
+# Don't ignore the gradle wrapper jar
+!gradle/wrapper/gradle-wrapper.jar
