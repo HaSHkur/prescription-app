@@ -1,6 +1,6 @@
 package com.cmed.prescriptionapp.repository;
 
-import com.cmed.prescriptionapp.domain.PrescriptionSpec;
+import com.cmed.prescriptionapp.entity.PrescriptionEntity;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
@@ -12,7 +12,7 @@ import java.util.List;
 @Component
 public class PrescriptionSpecification {
 
-    public Specification<PrescriptionSpec> findByCriteria(String patientName, Integer patientAge, Date fromDate, Date toDate) {
+    public Specification<PrescriptionEntity> findByCriteria(String patientName, Integer patientAge, Date fromDate, Date toDate) {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
