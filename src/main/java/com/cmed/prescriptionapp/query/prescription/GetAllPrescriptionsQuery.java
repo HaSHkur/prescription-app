@@ -10,7 +10,8 @@ import java.util.Date;
 public class GetAllPrescriptionsQuery {
     private String patientName;
     private Integer patientAge;
-    private Date prescriptionDate;
+    private Date fromDate;
+    private Date toDate;
     private int page;
     private int size;
 }

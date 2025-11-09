@@ -25,9 +25,11 @@ public class PrescriptionEntity {
     @Column(nullable = false)
     private Integer patientAge;
 
+    @Temporal(TemporalType.DATE)
     @Column(nullable = false)
     private Date prescriptionDate;
 
+    @Temporal(TemporalType.DATE)
     @Column
     private Date nextVisitDate;
 

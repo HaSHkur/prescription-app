@@ -3,9 +3,12 @@ package com.cmed.prescriptionapp.controller;
 import com.cmed.prescriptionapp.command.prescription.CreatePrescriptionCommand;
 import com.cmed.prescriptionapp.command.prescription.DeletePrescriptionCommand;
 import com.cmed.prescriptionapp.command.prescription.UpdatePrescriptionCommand;
+import com.cmed.prescriptionapp.domain.PrescriptionCountResponse;
 import com.cmed.prescriptionapp.domain.PrescriptionDetailsResponse;
 import com.cmed.prescriptionapp.domain.PrescriptionSummaryResponse;
 import com.cmed.prescriptionapp.handler.*;
+import com.cmed.prescriptionapp.query.prescription.CountPrescriptionsByDateQuery;
+import com.cmed.prescriptionapp.query.prescription.CountPrescriptionsGroupedByDateQuery;
 import com.cmed.prescriptionapp.query.prescription.GetAllPrescriptionsQuery;
 import com.cmed.prescriptionapp.query.prescription.GetPrescriptionByIdQuery;
 import lombok.AllArgsConstructor;
@@ -16,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/prescriptions")
@@ -27,6 +31,8 @@ public class PrescriptionController {
     private final DeletePrescriptionCommandHandler deletePrescriptionCommandHandler;
     private final GetPrescriptionByIdQueryHandler getPrescriptionByIdQueryHandler;
     private final GetAllPrescriptionsQueryHandler getAllPrescriptionsQueryHandler;
+    private final CountPrescriptionsByDateQueryHandler countPrescriptionsByDateQueryHandler;
+    private final CountPrescriptionsGroupedByDateQueryHandler countPrescriptionsGroupedByDateQueryHandler;
 
     @PostMapping
     public ResponseEntity<Long> createPrescription(@RequestBody CreatePrescriptionCommand command) {
@@ -56,12 +62,26 @@ public class PrescriptionController {
     public ResponseEntity<Page<PrescriptionSummaryResponse>> getAllPrescriptions(
             @RequestParam(required = false) String patientName,
             @RequestParam(required = false) Integer patientAge,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date prescriptionDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date fromDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date toDate,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-        GetAllPrescriptionsQuery query = new GetAllPrescriptionsQuery(patientName, patientAge, prescriptionDate, page, size);
+        GetAllPrescriptionsQuery query = new GetAllPrescriptionsQuery(patientName, patientAge, fromDate, toDate, page, size);
         Page<PrescriptionSummaryResponse> prescriptions = getAllPrescriptionsQueryHandler.handle(query);
         return new ResponseEntity<>(prescriptions, HttpStatus.OK);
+    }
+
+    @GetMapping("/count")
+    public ResponseEntity<?> countPrescriptions(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date date
+    ) {
+        if (date != null) {
+            PrescriptionCountResponse response = countPrescriptionsByDateQueryHandler.handle(new CountPrescriptionsByDateQuery(date));
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } else {
+            List<PrescriptionCountResponse> response = countPrescriptionsGroupedByDateQueryHandler.handle(new CountPrescriptionsGroupedByDateQuery());
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
     }
 }
