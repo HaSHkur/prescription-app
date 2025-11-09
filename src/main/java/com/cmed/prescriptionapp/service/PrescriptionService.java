@@ -2,6 +2,7 @@ package com.cmed.prescriptionapp.service;
 
 import com.cmed.prescriptionapp.domain.PrescriptionSummaryResponse;
 import com.cmed.prescriptionapp.entity.PrescriptionEntity;
+import com.cmed.prescriptionapp.mapper.PrescriptionMapper;
 import com.cmed.prescriptionapp.repository.PrescriptionRepository;
 import com.cmed.prescriptionapp.repository.PrescriptionSpecification;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +36,10 @@ public class PrescriptionService {
 
         Specification<PrescriptionEntity> spec = prescriptionSpecification.findByCriteria(patientName, patientAge, from, to);
 
-        Pageable pageable = PageRequest.of(page, size); // You might want to add sorting here, e.g., PageRequest.of(page, size, Sort.by("prescriptionDate").descending());
-        return prescriptionRepository.findAllProjectedBy(spec, pageable);
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<PrescriptionEntity> entities = prescriptionRepository.findAll(spec, pageable);
+
+        return entities.map(PrescriptionMapper::toSummaryResponse);
     }
 }
