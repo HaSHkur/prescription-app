@@ -1,7 +1,6 @@
 package com.cmed.prescriptionapp.repository;
 
 import com.cmed.prescriptionapp.domain.PrescriptionCountResponse;
-import com.cmed.prescriptionapp.domain.PrescriptionSpec;
 import com.cmed.prescriptionapp.domain.PrescriptionSummaryResponse;
 import com.cmed.prescriptionapp.entity.PrescriptionEntity;
 import org.springframework.data.domain.Page;
