@@ -6,13 +6,8 @@ import com.cmed.prescriptionapp.command.prescription.UpdatePrescriptionCommand;
 import com.cmed.prescriptionapp.domain.PrescriptionCountResponse;
 import com.cmed.prescriptionapp.domain.PrescriptionDetailsResponse;
 import com.cmed.prescriptionapp.domain.PrescriptionSummaryResponse;
-import com.cmed.prescriptionapp.handler.CountPrescriptionsByDateQueryHandler;
-import com.cmed.prescriptionapp.handler.CountPrescriptionsGroupedByDateQueryHandler;
-import com.cmed.prescriptionapp.handler.CreatePrescriptionCommandHandler;
-import com.cmed.prescriptionapp.handler.DeletePrescriptionCommandHandler;
-import com.cmed.prescriptionapp.handler.GetAllPrescriptionsQueryHandler;
-import com.cmed.prescriptionapp.handler.GetPrescriptionByIdQueryHandler;
-import com.cmed.prescriptionapp.handler.UpdatePrescriptionCommandHandler;
+import com.cmed.prescriptionapp.handler.*;
+import com.cmed.prescriptionapp.query.prescription.CountPrescriptionsBetweenDatesQuery;
 import com.cmed.prescriptionapp.query.prescription.CountPrescriptionsByDateQuery;
 import com.cmed.prescriptionapp.query.prescription.CountPrescriptionsGroupedByDateQuery;
 import com.cmed.prescriptionapp.query.prescription.GetAllPrescriptionsQuery;
@@ -39,6 +34,7 @@ public class PrescriptionController {
     private final GetAllPrescriptionsQueryHandler getAllPrescriptionsQueryHandler;
     private final CountPrescriptionsByDateQueryHandler countPrescriptionsByDateQueryHandler;
     private final CountPrescriptionsGroupedByDateQueryHandler countPrescriptionsGroupedByDateQueryHandler;
+    private final CountPrescriptionsBetweenDatesQueryHandler countPrescriptionsBetweenDatesQueryHandler;
 
     @PostMapping
     public ResponseEntity<Long> createPrescription(@RequestBody CreatePrescriptionCommand command) {
@@ -89,5 +85,14 @@ public class PrescriptionController {
             List<PrescriptionCountResponse> response = countPrescriptionsGroupedByDateQueryHandler.handle(new CountPrescriptionsGroupedByDateQuery());
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
+    }
+
+    @GetMapping("/count-between")
+    public ResponseEntity<PrescriptionCountResponse> countPrescriptionsBetweenDates(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date fromDate,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date toDate
+    ) {
+        PrescriptionCountResponse response = countPrescriptionsBetweenDatesQueryHandler.handle(new CountPrescriptionsBetweenDatesQuery(fromDate, toDate));
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

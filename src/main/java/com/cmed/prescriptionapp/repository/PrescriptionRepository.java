@@ -25,4 +25,7 @@ public interface PrescriptionRepository extends JpaRepository<PrescriptionEntity
 
     @Query("SELECT new com.cmed.prescriptionapp.domain.PrescriptionCountResponse(p.prescriptionDate, COUNT(p)) FROM PrescriptionEntity p GROUP BY p.prescriptionDate")
     List<PrescriptionCountResponse> countPrescriptionsGroupedByDate();
+
+    @Query("SELECT count(p) FROM PrescriptionEntity p WHERE p.prescriptionDate BETWEEN :fromDate AND :toDate")
+    long countByPrescriptionDateBetween(@Param("fromDate") Date fromDate, @Param("toDate") Date toDate);
 }
