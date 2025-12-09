@@ -35,13 +35,16 @@ public class JwtFilter extends OncePerRequestFilter {
         String username = null;
         String token = null;
 
-        // Extract JWT token from Authorization header
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            token = authHeader.substring(7);
-            username = jwtUtil.extractUsername(token);
+        // The shouldNotFilter method will prevent this from running on public URLs.
+        // So, if we are here, we expect an Authorization header.
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            filterChain.doFilter(request, response);
+            return;
         }
 
-        // Validate token and set authentication
+        token = authHeader.substring(7);
+        username = jwtUtil.extractUsername(token);
+
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             if (jwtUtil.validateToken(token)) {
                 Claims claims = jwtUtil.extractClaims(token);
@@ -64,7 +67,21 @@ public class JwtFilter extends OncePerRequestFilter {
             }
         }
 
-        // Continue filter chain
         filterChain.doFilter(request, response);
+    }
+
+    /**
+     * This method defines which requests should NOT be filtered by this JWT filter.
+     * @param request The current request.
+     * @return true if the filter should not be applied, false otherwise.
+     * @throws ServletException
+     */
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        String path = request.getServletPath();
+        return path.startsWith("/api/v1/prescriptions") ||
+               path.startsWith("/api/v1/auth") ||
+               path.startsWith("/v3/api-docs") ||
+               path.startsWith("/swagger-ui");
     }
 }

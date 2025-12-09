@@ -35,9 +35,9 @@ public class SecurityConfig {
                             "/v3/api-docs/**",
                             "/swagger-ui/**",
                             "/swagger-ui.html",
-                            "/api/auth/**",
+                            "/api/v1/auth/**",
                             "/register/**",
-                            "/api/prescriptions/**"
+                            "/api/v1/prescriptions/**"
                     ).permitAll()
                     .anyRequest().authenticated()
             )
@@ -50,7 +50,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:5173")); // frontend origin
+        config.setAllowedOriginPatterns(List.of("http://localhost:*")); // Allow any port on localhost
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
