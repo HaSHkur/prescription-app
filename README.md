@@ -38,7 +38,7 @@ This is a Spring Boot application for managing medical prescriptions. It provide
 
 1.  **Clone the repository:**
     ```sh
-    git clone <your-repository-url>
+    git clone https://github.com/HaSHkur/prescription-app
     ```
 2.  **Configure the database:**
     *   Open `src/main/resources/application.properties`.
